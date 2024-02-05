@@ -6,10 +6,4 @@ Work in progress
 
 Inital testing on 1200-S
 <br>
-Replace the site_id & Element ID with your ID's<br>
-    try:<br>
-        response = sdk.post.interfaces(<br>
-            site_id='1705604220721000796',<br>
-            element_id='1705534739582007296',<br>
-            data=svi_data_json,<br>
-            api_version="v4.17"<br>
+Known issue when you change the element ID its not reflected on the API call loop, do 1 element at a time while i work on a fix :)
