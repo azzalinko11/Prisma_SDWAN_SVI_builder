@@ -22,7 +22,6 @@ csv_file = 'svi_import.csv'
 
 
 # Read the SVI list from the CSV file
-
 svi_objects = []
 with open(csv_file, 'r') as file:
     reader = csv.DictReader(file)
@@ -110,39 +109,46 @@ svi_data_cov_json = json.dumps(svi_objects, indent = 4)[1:-1]
 print(svi_data_cov_json)
 
 
-# Send the POST request to add the address objects, will update to error handling in an updated release
-success_count = 0
-failure_count = 0
-
-for obj in svi_objects:
-    svi_data_json = json.dumps(obj, indent=4)
-
 # Send the POST request to add the address objects with error handling
 success_count = 0
 failure_count = 0
 
-for obj in svi_objects:
-    svi_data_json = json.dumps(obj, indent=4)
+# Read the SVI list from the CSV file
+with open(csv_file, 'r') as file:
+    reader = csv.DictReader(file)
+    
+    for obj in svi_objects:
+        try:
+            # Extract element_id and site_id directly from the CSV row
+            row = next(reader)
+            element_id = row['ELEMENT_ID']
+            site_id = row['SITE_ID']
 
-    try:
-        response = sdk.post.interfaces(
-            site_id=site_id,
-            element_id=element_id,
-            data=svi_data_json,
-            api_version="v4.17"
-        )
+            svi_data_json = json.dumps(obj, indent=4)
 
-        response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx status codes)
+            response = sdk.post.interfaces(
+                site_id=site_id,
+                element_id=element_id,
+                data=svi_data_json,
+                api_version="v4.17"
+            )
 
-        if response.status_code == 200:
-            success_count += 1
-            print(f'Successfully added SVI interface: {obj["name"]}')
-        else:
+            response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx status codes)
+
+            if response.status_code == 200:
+                success_count += 1
+                print(f'Successfully added SVI interface: {obj["name"]}')
+            else:
+                failure_count += 1
+                print(f'Failed to add SVI interface: {obj["name"]}, Status Code: {response.status_code}, Response: {response.text}')
+
+        except StopIteration:
+            # StopIteration indicates the end of the CSV file
+            break
+
+        except requests.exceptions.RequestException as e:
             failure_count += 1
-            print(f'Failed to add SVI interface: {obj["name"]}, Status Code: {response.status_code}, Response: {response.text}')
-
-    except requests.exceptions.RequestException as e:
-        failure_count += 1
-        print(f'Exception occurred while adding SVI interface: {obj["name"]}, Error: {e}')
+            print(f'Exception occurred while adding SVI interface: {obj["name"]}, Error: {e}')
 
 print(f'Successfully added {success_count} SVI interfaces. Failed to add {failure_count} interfaces.')
+
