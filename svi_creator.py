@@ -42,7 +42,8 @@ with open(csv_file, 'r') as file:
                 "dhcp_config": None,
                 "dns_v4_config": {
                     "name_servers": [
-                        "8.8.8.8"
+                        row['DNS1'],
+                        row['DNS2']
                     ]
                 },
                 "routes": None
@@ -63,7 +64,7 @@ with open(csv_file, 'r') as file:
             "network_context_id": "1705878522813001696",
             "bypass_pair": None,
             "service_link_config": None,
-            "scope": "local",
+            "scope": row['Scope'],
             "tags": None,
             "nat_zone_id": None,
             "devicemgmt_policysetstack_id": None,
@@ -110,6 +111,8 @@ failure_count = 0
 
 for obj in svi_objects:
     svi_data_json = json.dumps(obj, indent=4)
+
+#will covert to variable in later release    
     
     response = sdk.post.interfaces(
         site_id='1705604220721000796',
@@ -117,5 +120,3 @@ for obj in svi_objects:
         data=svi_data_json,
         api_version="v4.17"
     )
-
-
