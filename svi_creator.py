@@ -20,6 +20,7 @@ sdk.interactive.login_secret(client_id=credentials_file.client_id,
 # Path to the CSV file containing the SVI/Interfae list
 csv_file = 'svi_import.csv'
 
+
 # Read the SVI list from the CSV file
 
 svi_objects = []
@@ -100,6 +101,7 @@ with open(csv_file, 'r') as file:
         }
         svi_objects.append(svi_object)
 
+
 #convert to json and strip brackets
 svi_data_cov_json = json.dumps(svi_objects, indent = 4)[1:-1]
 print(svi_data_cov_json)
@@ -112,11 +114,32 @@ failure_count = 0
 for obj in svi_objects:
     svi_data_json = json.dumps(obj, indent=4)
 
-#will covert to variable in later release    
-    
-    response = sdk.post.interfaces(
-        site_id='1705604220721000796',
-        element_id='1705534739582007296',
-        data=svi_data_json,
-        api_version="v4.17"
-    )
+# Send the POST request to add the address objects with error handling
+success_count = 0
+failure_count = 0
+
+for obj in svi_objects:
+    svi_data_json = json.dumps(obj, indent=4)
+
+    try:
+        response = sdk.post.interfaces(
+            site_id='1705604220721000796',
+            element_id='1705534739582007296',
+            data=svi_data_json,
+            api_version="v4.17"
+        )
+
+        response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx status codes)
+
+        if response.status_code == 200:
+            success_count += 1
+            print(f'Successfully added SVI interface: {obj["name"]}')
+        else:
+            failure_count += 1
+            print(f'Failed to add SVI interface: {obj["name"]}, Status Code: {response.status_code}, Response: {response.text}')
+
+    except requests.exceptions.RequestException as e:
+        failure_count += 1
+        print(f'Exception occurred while adding SVI interface: {obj["name"]}, Error: {e}')
+
+print(f'Successfully added {success_count} SVI interfaces. Failed to add {failure_count} interfaces.')
