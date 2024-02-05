@@ -100,6 +100,9 @@ with open(csv_file, 'r') as file:
             "vrf_context_id": "1705517929068015496"
         }
         svi_objects.append(svi_object)
+        # Store element_id and site_id separately
+        element_id = row['ELEMENT_ID']
+        site_id = row['SITE_ID']
 
 
 #convert to json and strip brackets
@@ -123,8 +126,8 @@ for obj in svi_objects:
 
     try:
         response = sdk.post.interfaces(
-            site_id='1705604220721000796',
-            element_id='1705534739582007296',
+            site_id=site_id,
+            element_id=element_id,
             data=svi_data_json,
             api_version="v4.17"
         )
