@@ -12,7 +12,7 @@ from prisma_sase import API, jd
 # Instantiate the Prisma SASEx API constructor
 sdk = API()
 
-# Call Prisma SASE API login and credentaisl from "credentials_file.py" file using the Interactive helpers (Handle SAML2.0 login and MSP functions too!).
+# Call Prisma SASE API login and creds from "credentials_file.py" file using the Interactive helpers (Handle SAML2.0 login and MSP functions too!).
 sdk.interactive.login_secret(client_id=credentials_file.client_id, 
                              client_secret=credentials_file.client_secret, 
                              tsg_id=credentials_file.scope)
