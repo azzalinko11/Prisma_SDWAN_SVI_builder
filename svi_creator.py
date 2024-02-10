@@ -1,9 +1,8 @@
-#azzalinko11 version 0.1
+#azzalinko11 version 1.0
 
 #import libs
 import credentials_file
 import requests
-import prisma_sase
 import csv
 import json
 # Import the Prisma SASE SDK API constructor etc
@@ -61,7 +60,7 @@ with open(csv_file, 'r') as file:
             "sub_interface": None,
             "pppoe_config": None,
             "parent": None,
-            "network_context_id": "1705878522813001696",
+            "network_context_id": row['CONTEXT_ID'],
             "bypass_pair": None,
             "service_link_config": None,
             "scope": row['Scope'],
@@ -96,7 +95,7 @@ with open(csv_file, 'r') as file:
             "interface_profile_id": None,
             "authentication_config": None,
             "peer_bypasspair_wan_port_type": "none",
-            "vrf_context_id": "1705517929068015496"
+            "vrf_context_id": row['VRF_ID'],
         }
         svi_objects.append(svi_object)
         # Store element_id and site_id separately
@@ -151,4 +150,3 @@ with open(csv_file, 'r') as file:
             print(f'Exception occurred while adding SVI interface: {obj["name"]}, Error: {e}')
 
 print(f'Successfully added {success_count} SVI interfaces. Failed to add {failure_count} interfaces.')
-
